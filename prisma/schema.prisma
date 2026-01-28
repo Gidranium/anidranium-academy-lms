@@ -1,0 +1,297 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String      @id @default(cuid())
+  email           String      @unique
+  password        String
+  fullName        String
+  phone           String?
+  studentCode     String?     @unique  // ANI-XXXXXX
+  role            Role        @default(STUDENT)
+  status          UserStatus  @default(PENDING)
+  activationCode  String?     @unique
+  accessExpiresAt DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  enrollments         Enrollment[]
+  homeworkSubmissions HomeworkSubmission[]
+  teachingSchedules   Schedule[]          @relation("TeacherSchedules")
+  studentSchedules    Schedule[]          @relation("StudentSchedules")
+  groupMemberships    GroupMember[]
+  testResults         TestResult[]
+  createdCourses      Course[]            @relation("CourseCreator")
+
+  @@index([email])
+  @@index([studentCode])
+  @@index([status])
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+enum UserStatus {
+  PENDING   // Ожидает одобрения
+  ACTIVE    // Активен
+  EXPIRED   // Доступ истек
+  BLOCKED   // Заблокирован
+}
+
+model Course {
+  id          String        @id @default(cuid())
+  title       String
+  description String        @db.Text
+  thumbnail   String?
+  level       Level
+  status      CourseStatus  @default(DRAFT)
+  createdById String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  createdBy   User         @relation("CourseCreator", fields: [createdById], references: [id])
+  lessons     Lesson[]
+  enrollments Enrollment[]
+
+  @@index([status])
+  @@index([level])
+}
+
+enum Level {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model Lesson {
+  id          String   @id @default(cuid())
+  courseId    String
+  title       String
+  description String?  @db.Text
+  videoUrl    String?
+  order       Int
+  materials   Json?    // { files: [{name, url}], links: [{title, url}] }
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  course   Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  homework Homework?
+  test     Test?
+
+  @@index([courseId, order])
+}
+
+model Homework {
+  id           String        @id @default(cuid())
+  lessonId     String        @unique
+  type         HomeworkType
+  instruction  String        @db.Text
+  exampleUrl   String?       // Для VOICE_RECORDING
+  maxFileSize  Int?          // В MB
+  allowedTypes String?       // json array: ["audio/mp3", "video/mp4"]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  // Relations
+  lesson      Lesson                @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  submissions HomeworkSubmission[]
+}
+
+enum HomeworkType {
+  TEXT
+  FILE_UPLOAD
+  VOICE_RECORDING
+}
+
+model HomeworkSubmission {
+  id          String            @id @default(cuid())
+  homeworkId  String
+  userId      String
+  content     String?           @db.Text  // Текст или URL файла
+  fileUrl     String?
+  status      SubmissionStatus  @default(PENDING)
+  feedback    String?           @db.Text
+  grade       Int?              // 1-10 или 1-100
+  submittedAt DateTime          @default(now())
+  reviewedAt  DateTime?
+
+  // Relations
+  homework Homework @relation(fields: [homeworkId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id])
+
+  @@unique([homeworkId, userId])
+  @@index([status])
+  @@index([userId])
+}
+
+enum SubmissionStatus {
+  PENDING
+  REVIEWED
+}
+
+model Test {
+  id        String   @id @default(cuid())
+  lessonId  String   @unique
+  title     String
+  questions Json     // [{question: string, options: string[], correctAnswers: number[]}]
+  passingScore Int    @default(70)  // Минимальный % для прохождения
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  lesson  Lesson       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  results TestResult[]
+}
+
+model TestResult {
+  id          String   @id @default(cuid())
+  testId      String
+  userId      String
+  answers     Json     // [{questionIndex: number, selectedAnswers: number[]}]
+  score       Int      // Процент правильных ответов
+  passed      Boolean
+  completedAt DateTime @default(now())
+
+  // Relations
+  test Test @relation(fields: [testId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([testId])
+}
+
+model Trainer {
+  id          String   @id @default(cuid())
+  title       String
+  description String?  @db.Text
+  type        String   // diction, breathing, articulation
+  config      Json?    // Конфигурация тренажера
+  icon        String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([type])
+  @@index([isActive])
+}
+
+model Schedule {
+  id          String        @id @default(cuid())
+  title       String
+  type        ScheduleType
+  location    String?       // Адрес для offline
+  onlineLink  String?       // Ссылка для online
+  startTime   DateTime
+  endTime     DateTime
+  teacherId   String
+  groupId     String?
+  studentId   String?       // Для индивидуальных занятий
+  notes       String?       @db.Text
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  teacher User   @relation("TeacherSchedules", fields: [teacherId], references: [id])
+  group   Group? @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  student User?  @relation("StudentSchedules", fields: [studentId], references: [id])
+
+  @@index([teacherId])
+  @@index([groupId])
+  @@index([studentId])
+  @@index([startTime])
+}
+
+enum ScheduleType {
+  ONLINE
+  OFFLINE
+}
+
+model Group {
+  id        String   @id @default(cuid())
+  name      String
+  teacherId String?  // Основной преподаватель
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  members   GroupMember[]
+  schedules Schedule[]
+
+  @@index([isActive])
+}
+
+model GroupMember {
+  id        String   @id @default(cuid())
+  groupId   String
+  userId    String
+  joinedAt  DateTime @default(now())
+
+  // Relations
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([userId])
+}
+
+model Enrollment {
+  id         String   @id @default(cuid())
+  userId     String
+  courseId   String
+  progress   Int      @default(0)  // Процент прохождения
+  enrolledAt DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String           @db.Text
+  isRead    Boolean          @default(false)
+  link      String?
+  createdAt DateTime         @default(now())
+
+  @@index([userId, isRead])
+}
+
+enum NotificationType {
+  REGISTRATION_APPROVED
+  ACTIVATION_CODE
+  ACCESS_EXPIRING
+  ACCESS_EXPIRED
+  NEW_SCHEDULE
+  SCHEDULE_REMINDER
+  HOMEWORK_REVIEWED
+  NEW_COURSE
+  SYSTEM
+}
