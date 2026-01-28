@@ -1,24 +1,24 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { toast } from '@/hooks/use-toast'
-import { Mic, Loader2 } from 'lucide-react'
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { toast } from "@/components/ui/use-toast"
+import { Mic } from "lucide-react"
 
 export default function RegisterPage() {
   const router = useRouter()
-  const [loading, setLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    confirmPassword: '',
-    fullName: '',
-    phone: ''
+    email: "",
+    password: "",
+    confirmPassword: "",
+    fullName: "",
+    phone: ""
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -26,28 +26,19 @@ export default function RegisterPage() {
     
     if (formData.password !== formData.confirmPassword) {
       toast({
-        variant: 'destructive',
-        title: 'Ошибка',
-        description: 'Пароли не совпадают'
+        title: "Ошибка",
+        description: "Пароли не совпадают",
+        variant: "destructive"
       })
       return
     }
 
-    if (formData.password.length < 6) {
-      toast({
-        variant: 'destructive',
-        title: 'Ошибка',
-        description: 'Пароль должен содержать минимум 6 символов'
-      })
-      return
-    }
-
-    setLoading(true)
+    setIsLoading(true)
 
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
@@ -59,128 +50,107 @@ export default function RegisterPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Ошибка регистрации')
+        throw new Error(data.error || "Ошибка при регистрации")
       }
 
       toast({
-        title: 'Успешно!',
+        title: "Регистрация успешна!",
         description: data.message
       })
 
-      // Перенаправление на страницу ожидания
-      router.push('/pending')
+      setTimeout(() => {
+        router.push("/register/pending")
+      }, 2000)
     } catch (error: any) {
       toast({
-        variant: 'destructive',
-        title: 'Ошибка',
-        description: error.message
+        title: "Ошибка",
+        description: error.message,
+        variant: "destructive"
       })
     } finally {
-      setLoading(false)
+      setIsLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50 p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center space-x-2 mb-4">
-            <Mic className="h-10 w-10 text-primary" />
-            <span className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Anidranium
-            </span>
-          </Link>
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Регистрация</CardTitle>
-            <CardDescription>
-              Создайте аккаунт для доступа к курсам озвучки
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="fullName">ФИО *</Label>
-                <Input
-                  id="fullName"
-                  type="text"
-                  placeholder="Иванов Иван Иванович"
-                  required
-                  value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="your@email.com"
-                  required
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="phone">Телефон (опционально)</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="+7 (999) 123-45-67"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">Пароль *</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Минимум 6 символов"
-                  required
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Подтвердите пароль *</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="Повторите пароль"
-                  required
-                  value={formData.confirmPassword}
-                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                />
-              </div>
-
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Регистрация...
-                  </>
-                ) : (
-                  'Зарегистрироваться'
-                )}
-              </Button>
-            </form>
-
-            <div className="mt-4 text-center text-sm">
-              <span className="text-muted-foreground">Уже есть аккаунт? </span>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-indigo-100 p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1">
+          <div className="flex justify-center mb-4">
+            <Mic className="h-12 w-12 text-primary" />
+          </div>
+          <CardTitle className="text-2xl text-center">Регистрация</CardTitle>
+          <CardDescription className="text-center">
+            Создайте аккаунт для доступа к Anidranium Academy
+          </CardDescription>
+        </CardHeader>
+        <form onSubmit={handleSubmit}>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="fullName">ФИО</Label>
+              <Input
+                id="fullName"
+                placeholder="Иванов Иван Иванович"
+                value={formData.fullName}
+                onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="your@email.com"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Телефон (необязательно)</Label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="+7 (999) 123-45-67"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Пароль</Label>
+              <Input
+                id="password"
+                type="password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Подтвердите пароль</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                value={formData.confirmPassword}
+                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                required
+              />
+            </div>
+          </CardContent>
+          <CardFooter className="flex flex-col space-y-4">
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Регистрация..." : "Зарегистрироваться"}
+            </Button>
+            <p className="text-sm text-center text-gray-600">
+              Уже есть аккаунт?{" "}
               <Link href="/login" className="text-primary hover:underline">
                 Войти
               </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            </p>
+          </CardFooter>
+        </form>
+      </Card>
     </div>
   )
 }

@@ -6,8 +6,8 @@ import { Toaster } from "@/components/ui/toaster"
 const inter = Inter({ subsets: ["latin", "cyrillic"] })
 
 export const metadata: Metadata = {
-  title: "Anidranium Academy - Академия озвучки и дубляжа",
-  description: "Онлайн-платформа для обучения озвучке и дубляжу аниме",
+  title: "Anidranium Academy - Онлайн-школа озвучки и дубляжа",
+  description: "Профессиональное обучение озвучке и дубляжу от практикующих мастеров индустрии",
 }
 
 export default function RootLayout({

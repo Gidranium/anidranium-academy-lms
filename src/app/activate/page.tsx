@@ -1,129 +1,98 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { toast } from '@/hooks/use-toast'
-import { Mic, Loader2, CheckCircle2 } from 'lucide-react'
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { toast } from "@/components/ui/use-toast"
+import { Key } from "lucide-react"
 
 export default function ActivatePage() {
   const router = useRouter()
-  const [loading, setLoading] = useState(false)
-  const [code, setCode] = useState('')
-  const [activated, setActivated] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [code, setCode] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
+    setIsLoading(true)
 
     try {
-      const response = await fetch('/api/auth/activate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: code.toUpperCase() })
+      const response = await fetch("/api/auth/activate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code })
       })
 
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Ошибка активации')
+        throw new Error(data.error || "Ошибка при активации")
       }
 
-      setActivated(true)
       toast({
-        title: 'Успешно!',
-        description: data.message
+        title: "Аккаунт активирован!",
+        description: "Теперь вы можете войти в систему"
       })
 
-      // Перенаправление через 2 секунды
       setTimeout(() => {
-        router.push('/login')
+        router.push("/login")
       }, 2000)
     } catch (error: any) {
       toast({
-        variant: 'destructive',
-        title: 'Ошибка',
-        description: error.message
+        title: "Ошибка",
+        description: error.message,
+        variant: "destructive"
       })
     } finally {
-      setLoading(false)
+      setIsLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50 p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center space-x-2 mb-4">
-            <Mic className="h-10 w-10 text-primary" />
-            <span className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Anidranium
-            </span>
-          </Link>
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Активация аккаунта</CardTitle>
-            <CardDescription>
-              Введите код активации, полученный на email
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {activated ? (
-              <div className="text-center py-8 space-y-4">
-                <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto" />
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">Аккаунт активирован!</h3>
-                  <p className="text-muted-foreground">Перенаправление на страницу входа...</p>
-                </div>
-              </div>
-            ) : (
-              <>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="code">Код активации</Label>
-                    <Input
-                      id="code"
-                      type="text"
-                      placeholder="Введите код (например: X7KP2M)"
-                      required
-                      value={code}
-                      onChange={(e) => setCode(e.target.value.toUpperCase())}
-                      className="text-center text-2xl tracking-widest font-mono"
-                      maxLength={8}
-                    />
-                    <p className="text-sm text-muted-foreground">
-                      Код был отправлен на ваш email после одобрения регистрации
-                    </p>
-                  </div>
-
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Активация...
-                      </>
-                    ) : (
-                      'Активировать'
-                    )}
-                  </Button>
-                </form>
-
-                <div className="mt-4 text-center text-sm">
-                  <Link href="/login" className="text-primary hover:underline">
-                    Вернуться ко входу
-                  </Link>
-                </div>
-              </>
-            )}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-indigo-100 p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1">
+          <div className="flex justify-center mb-4">
+            <Key className="h-12 w-12 text-primary" />
+          </div>
+          <CardTitle className="text-2xl text-center">Активация аккаунта</CardTitle>
+          <CardDescription className="text-center">
+            Введите код активации, полученный на email
+          </CardDescription>
+        </CardHeader>
+        <form onSubmit={handleSubmit}>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="code">Код активации</Label>
+              <Input
+                id="code"
+                placeholder="X7KP2M"
+                value={code}
+                onChange={(e) => setCode(e.target.value.toUpperCase())}
+                maxLength={8}
+                className="text-center text-2xl font-bold tracking-widest"
+                required
+              />
+            </div>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p className="text-xs text-center text-blue-800">
+                Код был отправлен на ваш email после одобрения регистрации администратором
+              </p>
+            </div>
           </CardContent>
-        </Card>
-      </div>
+          <CardFooter className="flex flex-col space-y-4">
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Активация..." : "Активировать"}
+            </Button>
+            <Link href="/login" className="text-sm text-center text-primary hover:underline">
+              Вернуться к входу
+            </Link>
+          </CardFooter>
+        </form>
+      </Card>
     </div>
   )
 }
