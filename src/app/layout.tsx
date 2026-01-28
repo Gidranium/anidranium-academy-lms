@@ -1,20 +1,20 @@
-import type { Metadata } from "next"
-import { Inter } from "next/font/google"
-import "./globals.css"
-import { Toaster } from "@/components/ui/toaster"
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { Toaster } from "@/components/ui/toaster";
 
-const inter = Inter({ subsets: ["latin", "cyrillic"] })
+const inter = Inter({ subsets: ["latin", "cyrillic"] });
 
 export const metadata: Metadata = {
-  title: "Anidranium Academy - Онлайн-школа озвучки и дубляжа",
-  description: "Профессиональное обучение озвучке и дубляжу от практикующих мастеров индустрии",
-}
+  title: "Anidranium Academy - Академия озвучки и дубляжа",
+  description: "Онлайн-платформа для обучения озвучке и дубляжу аниме и фильмов",
+};
 
 export default function RootLayout({
   children,
-}: {
-  children: React.ReactNode
-}) {
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="ru">
       <body className={inter.className}>
@@ -22,5 +22,5 @@ export default function RootLayout({
         <Toaster />
       </body>
     </html>
-  )
+  );
 }

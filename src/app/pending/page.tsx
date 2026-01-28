@@ -1,63 +1,60 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Clock, Mail, Mic } from 'lucide-react'
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Clock, Mail } from "lucide-react";
 
 export default function PendingPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50 p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center space-x-2 mb-4">
-            <Mic className="h-10 w-10 text-primary" />
-            <span className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Anidranium
-            </span>
-          </Link>
-        </div>
-
-        <Card>
-          <CardHeader>
-            <div className="flex justify-center mb-4">
-              <Clock className="h-16 w-16 text-yellow-500" />
-            </div>
-            <CardTitle className="text-center">Ожидание подтверждения</CardTitle>
-            <CardDescription className="text-center">
-              Ваша регистрация успешно отправлена
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="bg-muted p-4 rounded-lg space-y-3">
-              <div className="flex items-start space-x-3">
-                <Mail className="h-5 w-5 text-primary mt-0.5" />
-                <div>
-                  <p className="font-medium">Что дальше?</p>
-                  <p className="text-sm text-muted-foreground">
-                    Администратор рассмотрит вашу заявку и отправит код активации на указанный email
-                  </p>
-                </div>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <div className="mx-auto mb-4 w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center">
+            <Clock className="w-8 h-8 text-yellow-600" />
+          </div>
+          <CardTitle className="text-2xl font-bold">Ожидайте подтверждения</CardTitle>
+          <CardDescription>
+            Ваша регистрация успешно отправлена
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="p-4 bg-blue-50 rounded-lg">
+            <div className="flex items-start gap-3">
+              <Mail className="w-5 h-5 text-blue-600 mt-0.5" />
+              <div className="text-sm text-gray-700">
+                <p className="font-medium mb-2">Что дальше?</p>
+                <ol className="list-decimal list-inside space-y-1">
+                  <li>Администратор проверит вашу заявку</li>
+                  <li>При одобрении вы получите код активации на email</li>
+                  <li>Введите код на странице активации</li>
+                  <li>Получите доступ ко всем курсам</li>
+                </ol>
               </div>
             </div>
+          </div>
 
-            <div className="space-y-2 text-sm text-muted-foreground">
-              <p>• Проверка заявки обычно занимает до 24 часов</p>
-              <p>• Код активации придёт на ваш email</p>
-              <p>• После получения кода, активируйте аккаунт на странице активации</p>
-            </div>
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <p className="text-sm text-gray-600">
+              <strong>Время ожидания:</strong> обычно до 24 часов.<br />
+              Проверяйте папку «Спам» и «Нежелательные».
+            </p>
+          </div>
 
-            <div className="pt-4 flex flex-col space-y-2">
+          <div className="flex flex-col gap-2">
+            <Button asChild variant="outline" className="w-full">
               <Link href="/activate">
-                <Button className="w-full">У меня уже есть код</Button>
+                У меня есть код активации
               </Link>
-              <Link href="/login">
-                <Button variant="outline" className="w-full">Вернуться ко входу</Button>
+            </Button>
+            <Button asChild variant="ghost" className="w-full">
+              <Link href="/">
+                На главную
               </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
-  )
+  );
 }

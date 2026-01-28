@@ -1,133 +1,120 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Mic, Video, Users, BookOpen, Calendar, Award } from "lucide-react"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { GraduationCap, Mic, Users, Video } from "lucide-react";
 
 export default function HomePage() {
   return (
     <div className="min-h-screen">
-      {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <Mic className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl font-bold">Anidranium Academy</h1>
-          </div>
-          <div className="flex gap-4">
-            <Link href="/login">
-              <Button variant="ghost">Вход</Button>
-            </Link>
-            <Link href="/register">
-              <Button>Регистрация</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-20">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-5xl font-bold mb-6">Станьте профессиональным актёром озвучки</h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Обучайтесь у практикующих мастеров индустрии. Развивайте свой голос, технику и актёрское мастерство.
-          </p>
-          <Link href="/register">
-            <Button size="lg" variant="secondary" className="text-lg px-8 py-6">
-              Начать обучение
-            </Button>
-          </Link>
+      <section className="relative bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 text-white">
+        <div className="container mx-auto px-4 py-20">
+          <div className="max-w-3xl mx-auto text-center">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6">
+              Anidranium Academy
+            </h1>
+            <p className="text-xl md:text-2xl mb-8 text-purple-100">
+              Академия озвучки и дубляжа
+            </p>
+            <p className="text-lg mb-10 text-purple-50">
+              Профессиональное обучение озвучке аниме, фильмов и игр. Онлайн и офлайн форматы, опытные преподаватели, индивидуальный подход.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button asChild size="lg" className="bg-white text-purple-700 hover:bg-purple-50">
+                <Link href="/register">
+                  Начать обучение
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white/10">
+                <Link href="/login">
+                  Войти
+                </Link>
+              </Button>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="py-20">
+      {/* Features Section */}
+      <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4">
-          <h3 className="text-3xl font-bold text-center mb-12">Что вы получите</h3>
-          <div className="grid md:grid-cols-3 gap-8">
+          <h2 className="text-4xl font-bold text-center mb-12">Преимущества обучения</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <Card>
               <CardHeader>
-                <Video className="h-12 w-12 text-primary mb-4" />
+                <Video className="w-12 h-12 text-purple-600 mb-4" />
                 <CardTitle>Видеоуроки</CardTitle>
-                <CardDescription>
-                  Структурированные курсы от базового до продвинутого уровня
-                </CardDescription>
               </CardHeader>
+              <CardContent>
+                <CardDescription>
+                  Структурированные курсы с видеоматериалами от профессиональных актеров дубляжа
+                </CardDescription>
+              </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <BookOpen className="h-12 w-12 text-primary mb-4" />
-                <CardTitle>Практические задания</CardTitle>
-                <CardDescription>
-                  Отрабатывайте навыки с проверкой от педагогов
-                </CardDescription>
+                <Mic className="w-12 h-12 text-purple-600 mb-4" />
+                <CardTitle>Практика</CardTitle>
               </CardHeader>
+              <CardContent>
+                <CardDescription>
+                  Домашние задания с записью озвучки и профессиональной обратной связью
+                </CardDescription>
+              </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <Users className="h-12 w-12 text-primary mb-4" />
+                <Users className="w-12 h-12 text-purple-600 mb-4" />
                 <CardTitle>Групповые занятия</CardTitle>
-                <CardDescription>
-                  Работайте в команде и получайте обратную связь
-                </CardDescription>
               </CardHeader>
+              <CardContent>
+                <CardDescription>
+                  Онлайн и офлайн занятия в малых группах для максимального внимания
+                </CardDescription>
+              </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <Mic className="h-12 w-12 text-primary mb-4" />
-                <CardTitle>Тренажёры</CardTitle>
-                <CardDescription>
-                  Упражнения для развития дикции, дыхания и артикуляции
-                </CardDescription>
+                <GraduationCap className="w-12 h-12 text-purple-600 mb-4" />
+                <CardTitle>Тренажеры</CardTitle>
               </CardHeader>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <Calendar className="h-12 w-12 text-primary mb-4" />
-                <CardTitle>Удобное расписание</CardTitle>
+              <CardContent>
                 <CardDescription>
-                  Онлайн и офлайн занятия в удобное для вас время
+                  Интерактивные упражнения для развития дикции, дыхания и артикуляции
                 </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <Award className="h-12 w-12 text-primary mb-4" />
-                <CardTitle>Сертификат</CardTitle>
-                <CardDescription>
-                  Подтвердите свою квалификацию после окончания курса
-                </CardDescription>
-              </CardHeader>
+              </CardContent>
             </Card>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gray-50 py-20">
+      <section className="py-20 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
         <div className="container mx-auto px-4 text-center">
-          <h3 className="text-3xl font-bold mb-6">Готовы начать своё путешествие?</h3>
-          <p className="text-xl mb-8 text-gray-600">
-            Зарегистрируйтесь прямо сейчас и получите доступ к пробным урокам
+          <h2 className="text-4xl font-bold mb-6">Готовы начать?</h2>
+          <p className="text-xl mb-8 max-w-2xl mx-auto">
+            Зарегистрируйтесь сейчас и получите доступ к курсам после подтверждения администратором
           </p>
-          <Link href="/register">
-            <Button size="lg" className="text-lg px-8 py-6">
-              Зарегистрироваться бесплатно
-            </Button>
-          </Link>
+          <Button asChild size="lg" className="bg-white text-purple-700 hover:bg-purple-50">
+            <Link href="/register">
+              Зарегистрироваться
+            </Link>
+          </Button>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8">
+      <footer className="bg-gray-900 text-gray-300 py-10">
         <div className="container mx-auto px-4 text-center">
           <p>&copy; 2026 Anidranium Academy. Все права защищены.</p>
+          <p className="mt-2 text-sm text-gray-400">
+            Платформа для обучения озвучке и дубляжу аниме
+          </p>
         </div>
       </footer>
     </div>
-  )
+  );
 }
